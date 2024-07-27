@@ -1,0 +1,24 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.editor-container {
+  border: 2px solid grey;
+  border-radius: 10px;
+  padding: 10px;
+  max-width: 100%; /* Adjust width as needed */
+  margin: 20px auto;
+  overflow: hidden;
+}
+
+.ql-container {
+  height: 300px; /* Adjust height as needed */
+  overflow-y: auto;
+}
+
+.ql-editor {
+  border-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
