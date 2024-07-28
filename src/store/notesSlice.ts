@@ -4,6 +4,8 @@ export interface Note {
   id: number;
   title: string;
   content: string;
+  folderId?: number;
+  username: string;
 }
 
 export interface NoteInput {
@@ -13,7 +15,7 @@ export interface NoteInput {
 
 interface NotesState {
   notes: Note[];
-  selectedNote: Note | null;
+  selectedNote?: Note | null;
   noteToEdit: Note | null;
   createNote: boolean;
 }
@@ -53,8 +55,8 @@ const notesSlice = createSlice({
     setNoteToEdit(state, action: PayloadAction<Note | null>) {
       state.noteToEdit = action.payload;
     },
-    createNote(state) {
-      state.createNote = true;
+    createNote(state, action: PayloadAction<boolean>) {
+      state.createNote = action.payload;
     },
   },
 });

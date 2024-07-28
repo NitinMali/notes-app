@@ -22,3 +22,8 @@
   padding: 10px;
   box-sizing: border-box;
 }
+
+.selected {
+  background-color: #d9edff;
+  border-color: #d9edff;
+}

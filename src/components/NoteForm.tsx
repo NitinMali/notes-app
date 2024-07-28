@@ -1,15 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import { RootState } from "../store/store";
-import { addNote, updateNote, setNoteToEdit } from "../store/notesSlice";
-import { Box, Input, Button } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { addNote, updateNote } from "../store/notesSlice";
+import {
+  Box,
+  Input,
+  Button,
+  Heading,
+  Spacer,
+  Flex,
+  Divider,
+  useToast,
+} from "@chakra-ui/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import "../styles.css";
 
 const NoteForm: React.FC = () => {
   const dispatch = useDispatch();
-  const noteToEdit = useSelector((state: RootState) => state.notes.noteToEdit);
+  const toast = useToast();
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const noteId = id ? parseInt(id) : undefined;
+
+  const noteToEdit = useSelector((state: RootState) =>
+    state.notes.notes.find((note) => note.id === noteId)
+  );
+  const selectedFolder = useSelector(
+    (state: RootState) => state.folders.selectedFolder
+  );
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -23,41 +43,74 @@ const NoteForm: React.FC = () => {
     }
   }, [noteToEdit]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (noteToEdit) {
       dispatch(updateNote({ id: noteToEdit.id, note: { title, content } }));
+      toast({
+        title: "Success",
+        description: "Note is updated successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+      return navigate(`/view/${noteId}`);
     } else {
-      const newNote = { id: Date.now(), title, content };
+      const newNote = {
+        id: Date.now(),
+        title,
+        content,
+        username: "JOHN",
+        folderId: selectedFolder?.id,
+      };
       dispatch(addNote(newNote));
+      return navigate("/");
     }
     setTitle("");
     setContent("");
-    dispatch(setNoteToEdit(null));
   };
 
   return (
-    <Box as="form" onSubmit={handleSubmit} mt={4}>
-      <Input
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        mb={4}
-      />
-      <ReactQuill
-        value={content}
-        onChange={setContent}
-        className="editor-container"
-        style={{
-          border: "1px solid #dddddd",
-          borderRadius: "5px",
-          padding: "5px",
-        }}
-      />
-      <Button type="submit" colorScheme="teal" mt={4}>
-        Save
-      </Button>
-    </Box>
+    <>
+      <Flex mb={4}>
+        <Heading size="md" mt={3}>
+          Create New Note
+        </Heading>
+        <Spacer />
+        <Button
+          type="button"
+          colorScheme="teal"
+          variant="outline"
+          mr={2}
+          onClick={() => {
+            noteId ? navigate(`/view/${noteId}`) : navigate(`/`);
+          }}
+        >
+          Cancel
+        </Button>
+        <Button type="button" colorScheme="teal" onClick={handleSubmit}>
+          Save
+        </Button>
+      </Flex>
+      <Divider mb={3} />
+      <Box mt={4}>
+        <Input
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          mb={4}
+        />
+        <ReactQuill
+          value={content}
+          onChange={setContent}
+          className="editor-container"
+          style={{
+            border: "1px solid #dddddd",
+            borderRadius: "5px",
+            padding: "5px",
+          }}
+        />
+      </Box>
+    </>
   );
 };
 

@@ -8,7 +8,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 ReactDOM.render(
   <Provider store={store}>
     <ChakraProvider>
-      <App />
+        <App />
     </ChakraProvider>
   </Provider>,
   document.getElementById("root")
