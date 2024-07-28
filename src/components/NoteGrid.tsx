@@ -52,7 +52,9 @@ const NoteGrid: React.FC = () => {
 
   const handleConfirmDialog = () => {
     if (selectedFolder) {
-      const filteredNotes = notes.filter((note) => note.folderId != selectedFolder.id);
+      const filteredNotes = notes.filter(
+        (note) => note.folderId != selectedFolder.id
+      );
       dispatch(setNotes(filteredNotes));
       dispatch(deleteFolder(selectedFolder.id));
       dispatch(setSelectedFolder(undefined));
@@ -103,19 +105,15 @@ const NoteGrid: React.FC = () => {
             {notes.map((note, key) => (
               <Card key={key}>
                 <CardBody>
-                  <Heading
-                    size="sx"
-                    color="blue"
-                    cursor="pointer"
-                    pb={2}
-                    onClick={() => navigate(`/view/${note.id}`)}
-                  >
+                  <Heading size="sx" pb={2}>
                     {note.title}
                   </Heading>
                   <div dangerouslySetInnerHTML={{ __html: note.content }} />
                 </CardBody>
                 <CardFooter>
-                  <Button>View here</Button>
+                  <Button onClick={() => navigate(`/view/${note.id}`)}>
+                    View
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
