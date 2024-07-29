@@ -15,6 +15,10 @@ const Header: React.FC = () => {
     if(!sessionStorage.getItem('username')) {
       dispatch(setCurrentUsername('John'));
       setUsername('John');
+    } else {
+      const savedUsername = sessionStorage.getItem('username');
+      dispatch(setCurrentUsername(savedUsername));
+      setUsername(savedUsername);
     }
   }, []);
 

@@ -65,7 +65,7 @@ const NoteForm: React.FC = () => {
         folderId: selectedFolder?.id,
       };
       dispatch(addNote(newNote));
-      return navigate("/");
+      return navigate(`/${selectedFolder?.id}`);
     }
     setTitle("");
     setContent("");

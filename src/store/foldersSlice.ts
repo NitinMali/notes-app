@@ -13,7 +13,7 @@ export interface FolderInput {
 interface FoldersState {
   folders: Folder[];
   selectedFolder?: Folder;
-  currentUsername?: string;
+  currentUsername?: string | null;
 }
 
 const initialState: FoldersState = {
@@ -45,7 +45,7 @@ const foldersSlice = createSlice({
     setSelectedFolder(state, action: PayloadAction<Folder | undefined>) {
       state.selectedFolder = action.payload;
     },
-    setCurrentUsername(state, action: PayloadAction<string | undefined>) {
+    setCurrentUsername(state, action: PayloadAction<string | null>) {
       state.currentUsername = action.payload;
     },
   },
