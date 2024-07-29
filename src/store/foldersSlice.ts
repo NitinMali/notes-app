@@ -2,24 +2,23 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Folder {
   id: number;
-  title: string;
+  title: string | undefined;
   username: string;
 }
 
 export interface FolderInput {
-  title: string;
+  title: string | undefined;
 }
 
 interface FoldersState {
   folders: Folder[];
   selectedFolder?: Folder;
-  folderToEdit: Folder | null;
+  currentUsername?: string;
 }
 
 const initialState: FoldersState = {
   folders: [],
   selectedFolder: undefined,
-  folderToEdit: null,
 };
 
 const foldersSlice = createSlice({
@@ -46,8 +45,8 @@ const foldersSlice = createSlice({
     setSelectedFolder(state, action: PayloadAction<Folder | undefined>) {
       state.selectedFolder = action.payload;
     },
-    setFolderToEdit(state, action: PayloadAction<Folder | null>) {
-      state.folderToEdit = action.payload;
+    setCurrentUsername(state, action: PayloadAction<string | undefined>) {
+      state.currentUsername = action.payload;
     },
   },
 });
@@ -58,7 +57,7 @@ export const {
   updateFolder,
   deleteFolder,
   setSelectedFolder,
-  setFolderToEdit,
+  setCurrentUsername,
 } = foldersSlice.actions;
 
 export default foldersSlice.reducer;

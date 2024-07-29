@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../store/store";
-import { setNoteToEdit, deleteNote } from "../store/notesSlice";
+import { deleteNote } from "../store/notesSlice";
 import { Box, Heading, useToast } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import CustomAlertDialog from "./shared/ConfirmAlertDialog";

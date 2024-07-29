@@ -2,7 +2,6 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { addFolder, setSelectedFolder } from "../store/foldersSlice";
-import { createNote } from "../store/notesSlice";
 import { useNavigate } from "react-router-dom";
 import {
   List,
@@ -24,17 +23,18 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { AddIcon } from "@chakra-ui/icons";
 
 const FolderList: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const username = useSelector((state: RootState) => state.folders.currentUsername);
   const folders = useSelector((state: RootState) =>
-    state.folders.folders.filter((folder) => folder.username === "JOHN")
+    state.folders.folders.filter((folder) => folder.username === username)
   );
 
   const notes = useSelector((state: RootState) =>
-    state.notes.notes.filter((note) => note.username === "JOHN")
+    state.notes.notes.filter((note) => note.username === username)
   );
 
   const selectedFolder = useSelector(
@@ -57,7 +57,7 @@ const FolderList: React.FC = () => {
               <IconButton
                 isRound={true}
                 variant="solid"
-                colorScheme="teal"
+                colorScheme="blue"
                 aria-label="Done"
                 fontSize="12px"
                 size="xs"
@@ -68,10 +68,9 @@ const FolderList: React.FC = () => {
                     addFolder({
                       id: newFolderID,
                       title: `New Folder ${folders.length + 1}`,
-                      username: "JOHN",
+                      username: username ? username : '',
                     })
                   );
-                  dispatch(createNote(false));
                 }}
               />
             </Flex>
@@ -82,21 +81,17 @@ const FolderList: React.FC = () => {
                   <ListItem
                     p={2}
                     _hover={{ bg: "gray.100" }}
+                    cursor="pointer"
+                    onClick={() => {
+                      dispatch(setSelectedFolder(folder));
+                      navigate(`/${folder.id}`);
+                    }}
                     className={
                       selectedFolder?.id === folder.id ? "selected" : ""
                     }
                   >
                     <Flex>
-                      <Text
-                        cursor="pointer"
-                        onClick={() => {
-                          dispatch(createNote(false));
-                          dispatch(setSelectedFolder(folder));
-                          navigate("/");
-                        }}
-                      >
-                        {folder.title}
-                      </Text>
+                      <Text>{folder.title}</Text>
                       <Spacer />
                       <Badge color="black" borderRadius="5px">
                         {

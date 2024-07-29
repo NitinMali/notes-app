@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { setSelectedNote, createNote, setNotes } from "../store/notesSlice";
-import { useNavigate } from "react-router-dom";
+import { setNotes } from "../store/notesSlice";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Text,
@@ -17,27 +17,44 @@ import {
   Divider,
   AlertIcon,
   useToast,
+  Input,
+  Box,
 } from "@chakra-ui/react";
 
-import { AddIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  CheckIcon,
+  DeleteIcon,
+  EditIcon,
+  CloseIcon,
+} from "@chakra-ui/icons";
 import CustomAlertDialog from "./shared/ConfirmAlertDialog";
-import { deleteFolder, setSelectedFolder, Folder } from "../store/foldersSlice";
+import {
+  deleteFolder,
+  setSelectedFolder,
+  updateFolder,
+} from "../store/foldersSlice";
 
 const NoteGrid: React.FC = () => {
+  const [editFolder, setEditFolder] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toast = useToast();
-  const folders = useSelector((state: RootState) => state.folders.folders);
-
-  const selectedFolder = useSelector(
-    (state: RootState) => state.folders.selectedFolder
+  const username = useSelector((state: RootState) => state.folders.currentUsername);
+  const folders = useSelector((state: RootState) =>
+    state.folders.folders.filter((folder) => folder.username === username)
   );
+  const { id } = useParams<{ id: string }>();
+  const folderId = id ? parseInt(id) : undefined;
+
+  const selectedFolder = useSelector((state: RootState) =>
+    state.folders.folders.find((folder) => folder.id === folderId)
+  );
+
+  const [folderTitle, setFolderTitle] = useState("");
+
   const notes = useSelector((state: RootState) =>
     state.notes.notes.filter((note) => note.folderId == selectedFolder?.id)
-  );
-
-  const selectedNote = useSelector(
-    (state: RootState) => state.notes.selectedNote
   );
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -74,28 +91,82 @@ const NoteGrid: React.FC = () => {
       {selectedFolder ? (
         <>
           <Flex mb={4}>
-            <Heading size="md" mt={3}>
-              {selectedFolder?.title}
-              <EditIcon ml={2} cursor="pointer" />
-            </Heading>
+            {!editFolder && (
+              <>
+              <Heading size="md" mt={3}>
+                {selectedFolder.title}
+              </Heading>
+              <EditIcon
+                  ml={4}
+                  mt={4}
+                  cursor="pointer"
+                  color="blue"
+                  onClick={() => {
+                    setEditFolder(true);
+                    if (selectedFolder?.title) {
+                      setFolderTitle(selectedFolder.title);
+                    }
+                  }}
+                />
+              </>
+            )}
+
+            {editFolder && (
+              <>
+                <Input
+                  value={folderTitle}
+                  mt={3}
+                  w="30%"
+                  onChange={(e) => setFolderTitle(e.target.value)}
+                />
+                <CheckIcon
+                  mt={6}
+                  mx={4}
+                  boxSize={4}
+                  cursor="pointer"
+                  color="blue"
+                  onClick={() => {
+                    dispatch(
+                      updateFolder({
+                        id: selectedFolder.id,
+                        folder: { title: folderTitle },
+                      })
+                    );
+                    setEditFolder(false);
+                  }}
+                />
+                <CloseIcon
+                  cursor="pointer"
+                  mt={6}
+                  color="blue"
+                  boxSize={4}
+                  onClick={() => setEditFolder(false)}
+                />
+              </>
+            )}
+
             <Spacer />
-            <Button
-              leftIcon={<AddIcon />}
-              colorScheme="teal"
-              variant="outline"
-              mr={2}
-              onClick={() => navigate("/form")}
-            >
-              Note
-            </Button>
-            <Button
-              leftIcon={<DeleteIcon />}
-              colorScheme="teal"
-              variant="solid"
-              onClick={handleOpenDialog}
-            >
-              Delete Folder
-            </Button>
+            {!editFolder && (
+              <>
+                <Button
+                  leftIcon={<AddIcon />}
+                  colorScheme="blue"
+                  variant="outline"
+                  mr={2}
+                  onClick={() => navigate("/form")}
+                >
+                  Note
+                </Button>
+                <Button
+                  leftIcon={<DeleteIcon />}
+                  colorScheme="blue"
+                  variant="solid"
+                  onClick={handleOpenDialog}
+                >
+                  Delete Folder
+                </Button>
+              </>
+            )}
           </Flex>
           <Divider mb={3} />
           <SimpleGrid

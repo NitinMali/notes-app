@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import useSessionUsername from '../useSessionUsername'; 
 
 const NoteForm: React.FC = () => {
   const dispatch = useDispatch();
@@ -23,7 +24,8 @@ const NoteForm: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const noteId = id ? parseInt(id) : undefined;
-
+  const [username, setUsername] = useSessionUsername();
+  
   const noteToEdit = useSelector((state: RootState) =>
     state.notes.notes.find((note) => note.id === noteId)
   );
@@ -59,7 +61,7 @@ const NoteForm: React.FC = () => {
         id: Date.now(),
         title,
         content,
-        username: "JOHN",
+        username: username ? username : '',
         folderId: selectedFolder?.id,
       };
       dispatch(addNote(newNote));
@@ -78,16 +80,16 @@ const NoteForm: React.FC = () => {
         <Spacer />
         <Button
           type="button"
-          colorScheme="teal"
+          colorScheme="blue"
           variant="outline"
           mr={2}
           onClick={() => {
-            noteId ? navigate(`/view/${noteId}`) : navigate(`/`);
+            noteId ? navigate(`/view/${noteId}`) : navigate(`/${selectedFolder?.id}`);
           }}
         >
           Cancel
         </Button>
-        <Button type="button" colorScheme="teal" onClick={handleSubmit}>
+        <Button type="button" colorScheme="blue" onClick={handleSubmit}>
           Save
         </Button>
       </Flex>
