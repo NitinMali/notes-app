@@ -1,30 +1,28 @@
 import React, { useEffect } from "react";
+import { RootState } from "../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Box, Heading, Select, Text, Flex, Spacer } from "@chakra-ui/react";
 import { SunIcon } from "@chakra-ui/icons";
-import useSessionUsername from "../useSessionUsername";
-import { setCurrentUsername } from "../store/foldersSlice";
+import { setUsername } from "../store/foldersSlice";
 
 const Header: React.FC = () => {
-  const [username, setUsername] = useSessionUsername();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const username = useSelector((state: RootState) => state.folders.username);
 
   useEffect(()=> {
     if(!sessionStorage.getItem('username')) {
-      dispatch(setCurrentUsername('John'));
-      setUsername('John');
+      dispatch(setUsername('John'));
     } else {
       const savedUsername = sessionStorage.getItem('username');
-      dispatch(setCurrentUsername(savedUsername));
-      setUsername(savedUsername);
+      dispatch(setUsername(savedUsername));
     }
   }, []);
 
   const handleUsernameChange = (username: string) => {
     setUsername(username);
-    dispatch(setCurrentUsername(username));
+    dispatch(setUsername(username));
     navigate("/");
   };
   return (

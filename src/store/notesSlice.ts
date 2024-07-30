@@ -6,6 +6,8 @@ export interface Note {
   content: string;
   folderId?: number;
   username: string;
+  share?: string[];
+  lockedBy?: string;
 }
 
 export interface NoteInput {

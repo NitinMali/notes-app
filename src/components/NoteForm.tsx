@@ -16,24 +16,23 @@ import {
 } from "@chakra-ui/react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import useSessionUsername from '../useSessionUsername'; 
 
 const NoteForm: React.FC = () => {
   const dispatch = useDispatch();
   const toast = useToast();
   const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  
   const { id } = useParams<{ id: string }>();
   const noteId = id ? parseInt(id) : undefined;
-  const [username, setUsername] = useSessionUsername();
-  
+
+  const {username, selectedFolder} = useSelector(
+    (state: RootState) => state.folders
+  );
   const noteToEdit = useSelector((state: RootState) =>
     state.notes.notes.find((note) => note.id === noteId)
   );
-  const selectedFolder = useSelector(
-    (state: RootState) => state.folders.selectedFolder
-  );
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
 
   useEffect(() => {
     if (noteToEdit) {

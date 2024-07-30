@@ -10,7 +10,6 @@ import NoteDetail from "./components/NoteDetail";
 import NoteForm from "./components/NoteForm";
 import NoteGrid from "./components/NoteGrid";
 import { Box, Flex } from "@chakra-ui/react";
-import useSessionUsername from "./useSessionUsername";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import "./styles.css";
 
@@ -21,10 +20,7 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const notes = useSelector((state: RootState) => state.notes.notes);
-  const folders = useSelector((state: RootState) => state.folders.folders);
-  const username = useSelector(
-    (state: RootState) => state.folders.currentUsername
-  );
+  const {username, folders} = useSelector((state: RootState) => state.folders);
 
   useEffect(() => {
     const savedNotes = JSON.parse(localStorage.getItem("notes") || "[]");

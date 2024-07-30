@@ -37,27 +37,23 @@ import {
 
 const NoteGrid: React.FC = () => {
   const [editFolder, setEditFolder] = useState(false);
+  const [folderTitle, setFolderTitle] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toast = useToast();
-  const username = useSelector((state: RootState) => state.folders.currentUsername);
-  const folders = useSelector((state: RootState) =>
-    state.folders.folders.filter((folder) => folder.username === username)
-  );
   const { id } = useParams<{ id: string }>();
   const folderId = id ? parseInt(id) : undefined;
 
-  const selectedFolder = useSelector((state: RootState) =>
-    state.folders.folders.find((folder) => folder.id === folderId)
+  const { username, folders: allFolders } = useSelector(
+    (state: RootState) => state.folders
   );
-
-  const [folderTitle, setFolderTitle] = useState("");
+  const folders = allFolders.filter((folder) => folder.username === username);
+  const selectedFolder = allFolders.find((folder) => folder.id === folderId);
 
   const notes = useSelector((state: RootState) =>
     state.notes.notes.filter((note) => note.folderId == selectedFolder?.id)
   );
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -93,10 +89,10 @@ const NoteGrid: React.FC = () => {
           <Flex mb={4}>
             {!editFolder && (
               <>
-              <Heading size="md" mt={3}>
-                {selectedFolder.title}
-              </Heading>
-              <EditIcon
+                <Heading size="md" mt={3}>
+                  {selectedFolder.title}
+                </Heading>
+                <EditIcon
                   ml={4}
                   mt={4}
                   cursor="pointer"
@@ -179,7 +175,11 @@ const NoteGrid: React.FC = () => {
                   <Heading size="sx" pb={2}>
                     {note.title}
                   </Heading>
-                  <div dangerouslySetInnerHTML={{ __html: note.content }} />
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: note.content.substring(0, 200).concat(' ...'),
+                    }}
+                  />
                 </CardBody>
                 <CardFooter>
                   <Button onClick={() => navigate(`/view/${note.id}`)}>

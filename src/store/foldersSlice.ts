@@ -13,7 +13,7 @@ export interface FolderInput {
 interface FoldersState {
   folders: Folder[];
   selectedFolder?: Folder;
-  currentUsername?: string | null;
+  username?: string | null;
 }
 
 const initialState: FoldersState = {
@@ -31,22 +31,33 @@ const foldersSlice = createSlice({
     addFolder(state, action: PayloadAction<Folder>) {
       state.folders.push(action.payload);
     },
-    updateFolder(state, action: PayloadAction<{ id: number; folder: FolderInput }>) {
+    updateFolder(
+      state,
+      action: PayloadAction<{ id: number; folder: FolderInput }>
+    ) {
       const index = state.folders.findIndex(
         (folder) => folder.id === action.payload.id
       );
       if (index !== -1) {
-        state.folders[index] = { ...state.folders[index], ...action.payload.folder };
+        state.folders[index] = {
+          ...state.folders[index],
+          ...action.payload.folder,
+        };
       }
     },
     deleteFolder(state, action: PayloadAction<number>) {
-      state.folders = state.folders.filter((folder) => folder.id !== action.payload);
+      state.folders = state.folders.filter(
+        (folder) => folder.id !== action.payload
+      );
     },
     setSelectedFolder(state, action: PayloadAction<Folder | undefined>) {
       state.selectedFolder = action.payload;
     },
-    setCurrentUsername(state, action: PayloadAction<string | null>) {
-      state.currentUsername = action.payload;
+    setUsername(state, action: PayloadAction<string | null>) {
+      state.username = action.payload;
+      if (action.payload) {
+        sessionStorage.setItem("username", action.payload);
+      }
     },
   },
 });
@@ -57,7 +68,7 @@ export const {
   updateFolder,
   deleteFolder,
   setSelectedFolder,
-  setCurrentUsername,
+  setUsername,
 } = foldersSlice.actions;
 
 export default foldersSlice.reducer;

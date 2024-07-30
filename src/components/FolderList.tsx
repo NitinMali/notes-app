@@ -28,17 +28,15 @@ import { AddIcon } from "@chakra-ui/icons";
 const FolderList: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const username = useSelector((state: RootState) => state.folders.currentUsername);
-  const folders = useSelector((state: RootState) =>
-    state.folders.folders.filter((folder) => folder.username === username)
-  );
+  const {
+    username,
+    selectedFolder,
+    folders: allFolders,
+  } = useSelector((state: RootState) => state.folders);
+  const folders = allFolders.filter((folder) => folder.username === username);
 
   const notes = useSelector((state: RootState) =>
     state.notes.notes.filter((note) => note.username === username)
-  );
-
-  const selectedFolder = useSelector(
-    (state: RootState) => state.folders.selectedFolder
   );
 
   return (
@@ -68,7 +66,7 @@ const FolderList: React.FC = () => {
                     addFolder({
                       id: newFolderID,
                       title: `New Folder ${folders.length + 1}`,
-                      username: username ? username : '',
+                      username: username ? username : "",
                     })
                   );
                 }}
