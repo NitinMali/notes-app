@@ -49,11 +49,24 @@ const NoteGrid: React.FC = () => {
     (state: RootState) => state.folders
   );
   const folders = allFolders.filter((folder) => folder.username === username);
-  const selectedFolder = allFolders.find((folder) => folder.id === folderId);
 
-  const notes = useSelector((state: RootState) =>
-    state.notes.notes.filter((note) => note.folderId == selectedFolder?.id)
-  );
+  let selectedFolder:any;
+  let notes:any[] = [];
+
+  if (id == "shared") {
+    selectedFolder = {
+      id: 'shared',
+      title: 'Shared'
+    }
+    notes = useSelector((state: RootState) =>
+      username ? state.notes.notes.filter((note) => note.share?.includes(username)): []
+    );
+  } else {
+    selectedFolder = allFolders.find((folder) => folder.id === folderId);
+    notes = useSelector((state: RootState) =>
+      state.notes.notes.filter((note) => note.folderId == selectedFolder?.id)
+    );
+  }
 
   const handleOpenDialog = () => {
     setIsDialogOpen(true);
@@ -84,7 +97,7 @@ const NoteGrid: React.FC = () => {
 
   return (
     <>
-      {selectedFolder ? (
+      {(selectedFolder || id == 'shared') ? (
         <>
           <Flex mb={4}>
             {!editFolder && (
@@ -92,7 +105,7 @@ const NoteGrid: React.FC = () => {
                 <Heading size="md" mt={3}>
                   {selectedFolder.title}
                 </Heading>
-                <EditIcon
+                {id !== 'shared' && (<EditIcon
                   ml={4}
                   mt={4}
                   cursor="pointer"
@@ -103,7 +116,7 @@ const NoteGrid: React.FC = () => {
                       setFolderTitle(selectedFolder.title);
                     }
                   }}
-                />
+                />)}
               </>
             )}
 
@@ -142,7 +155,7 @@ const NoteGrid: React.FC = () => {
             )}
 
             <Spacer />
-            {!editFolder && (
+            {!editFolder && id!=='shared' && (
               <>
                 <Button
                   leftIcon={<AddIcon />}
@@ -177,7 +190,7 @@ const NoteGrid: React.FC = () => {
                   </Heading>
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: note.content.substring(0, 200).concat(' ...'),
+                      __html: note.content.substring(0, 200).concat(" ..."),
                     }}
                   />
                 </CardBody>

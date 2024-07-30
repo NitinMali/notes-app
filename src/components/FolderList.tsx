@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { addFolder, setSelectedFolder } from "../store/foldersSlice";
@@ -40,9 +40,13 @@ const FolderList: React.FC = () => {
     state.notes.notes.filter((note) => note.username === username)
   );
 
+  useEffect(() => {
+    setTabIndex(0);
+  }, [username]);
   return (
     <>
       <Tabs
+        index={tabIndex} 
         position="relative"
         variant="unstyled"
         onChange={(index) => {

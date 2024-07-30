@@ -170,18 +170,18 @@ const NoteDetail: React.FC = () => {
                 cursor="pointer"
                 color="blue"
               />
-              <DeleteIcon
+              {note.username == username && (<DeleteIcon
                 color="red"
                 cursor="pointer"
                 ml={2}
                 onClick={handleOpenDialog}
-              />
-              <EmailIcon
+              />)}
+              {note.username == username && (<EmailIcon
                 color="blue"
                 cursor="pointer"
                 ml={2}
                 onClick={onOpen}
-              />
+              />)}
             </Box>
           </Box>
           <Box flex="1" p={4} overflow="auto">
