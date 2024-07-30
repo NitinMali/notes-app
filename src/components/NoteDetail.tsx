@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { RootState } from "../store/store";
-import { deleteNote } from "../store/notesSlice";
+import { deleteNote, updateShare } from "../store/notesSlice";
 import {
   Box,
   Heading,
@@ -17,6 +17,8 @@ import {
   ModalFooter,
   ModalBody,
   ModalCloseButton,
+  Stack,
+  Checkbox,
 } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon, EmailIcon } from "@chakra-ui/icons";
 import CustomAlertDialog from "./shared/ConfirmAlertDialog";
@@ -33,6 +35,8 @@ const NoteDetail: React.FC = () => {
   const note = useSelector((state: RootState) =>
     state.notes.notes.find((note) => note.id === noteId)
   );
+
+  const { username } = useSelector((state: RootState) => state.folders);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -59,6 +63,13 @@ const NoteDetail: React.FC = () => {
     navigate("/");
   };
 
+  const handleShare = (share: string[]) => {
+    if (noteId) {
+      dispatch(updateShare({ id: noteId, share }));
+    }
+    onClose();
+  };
+
   if (!note) {
     return <Box>Please select note to view</Box>;
   }
@@ -66,23 +77,74 @@ const NoteDetail: React.FC = () => {
   const ShareModal: React.FC<{
     isOpen: boolean;
     onClose: () => void;
-  }> = ({ isOpen, onClose }) => {
+    onSubmit: (users: string[]) => void;
+    username?: string | null;
+    shared?: string[];
+  }> = ({ isOpen, onClose, username, onSubmit, shared = [] }) => {
+    const [usernames, setUsernames] = useState<string[]>(shared);
+
+    const handleToggleUsername = (username: string) => {
+      setUsernames((prevUsernames) => {
+        if (prevUsernames.includes(username)) {
+          return prevUsernames.filter((u) => u !== username);
+        } else {
+          return [...prevUsernames, username];
+        }
+      });
+    };
+
     return (
       <>
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Share</ModalHeader>
+            <ModalHeader>Share this note with</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              Hello
+              <Stack spacing={2}>
+                {username !== "John" && (
+                  <Checkbox
+                    isChecked={usernames.includes("John")}
+                    onChange={(e) => handleToggleUsername("John")}
+                  >
+                    John
+                  </Checkbox>
+                )}
+                {username !== "Amar" && (
+                  <Checkbox
+                    isChecked={usernames.includes("Amar")}
+                    onChange={(e) => handleToggleUsername("Amar")}
+                  >
+                    Amar
+                  </Checkbox>
+                )}
+                {username !== "Priya" && (
+                  <Checkbox
+                    isChecked={usernames.includes("Priya")}
+                    onChange={(e) => handleToggleUsername("Priya")}
+                  >
+                    Priya
+                  </Checkbox>
+                )}
+              </Stack>
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
+              <Button
+                colorScheme="blue"
+                variant="outline"
+                mr={3}
+                onClick={onClose}
+              >
                 Close
               </Button>
-              <Button variant="filled">Share</Button>
+              <Button
+                colorScheme="blue"
+                variant="solid"
+                onClick={() => onSubmit(usernames)}
+              >
+                Share
+              </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
@@ -136,7 +198,13 @@ const NoteDetail: React.FC = () => {
           cancelText="Cancel"
         />
 
-        <ShareModal onClose={onClose} isOpen/>
+        <ShareModal
+          onClose={onClose}
+          isOpen={isOpen}
+          username={username}
+          shared={note.share}
+          onSubmit={handleShare}
+        />
       </>
     )
   );

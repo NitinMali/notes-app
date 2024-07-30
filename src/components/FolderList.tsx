@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { addFolder, setSelectedFolder } from "../store/foldersSlice";
@@ -26,6 +26,7 @@ import {
 import { AddIcon } from "@chakra-ui/icons";
 
 const FolderList: React.FC = () => {
+  const [tabIndex, setTabIndex] = useState(0);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
@@ -41,38 +42,52 @@ const FolderList: React.FC = () => {
 
   return (
     <>
-      <Tabs position="relative" variant="unstyled">
+      <Tabs
+        position="relative"
+        variant="unstyled"
+        onChange={(index) => {
+          setTabIndex(index);
+          if (index == 1) {
+            navigate("/shared");
+          } else {
+            if(folders[0]) {
+              navigate(`/${folders[0].id}`);
+            }
+          }
+        }}
+      >
         <TabList mb="1em">
           <Tab>My note</Tab>
           <Tab>Shared with me</Tab>
         </TabList>
         <TabIndicator mt={-3} height="2px" bg="blue.500" borderRadius="1px" />
+        <Flex mb={2}>
+          <Heading size="md">Folders</Heading>
+          <Spacer />
+          {tabIndex == 0 && (
+            <IconButton
+              isRound={true}
+              variant="solid"
+              colorScheme="blue"
+              aria-label="Done"
+              fontSize="12px"
+              size="xs"
+              icon={<AddIcon />}
+              onClick={() => {
+                const newFolderID = Date.now();
+                dispatch(
+                  addFolder({
+                    id: newFolderID,
+                    title: `New Folder ${folders.length + 1}`,
+                    username: username ? username : "",
+                  })
+                );
+              }}
+            />
+          )}
+        </Flex>
         <TabPanels>
           <TabPanel border="1px" borderColor="gray.200" borderRadius="5px">
-            <Flex mb={2}>
-              <Heading size="md">Folders</Heading>
-              <Spacer />
-              <IconButton
-                isRound={true}
-                variant="solid"
-                colorScheme="blue"
-                aria-label="Done"
-                fontSize="12px"
-                size="xs"
-                icon={<AddIcon />}
-                onClick={() => {
-                  const newFolderID = Date.now();
-                  dispatch(
-                    addFolder({
-                      id: newFolderID,
-                      title: `New Folder ${folders.length + 1}`,
-                      username: username ? username : "",
-                    })
-                  );
-                }}
-              />
-            </Flex>
-            <Divider mb={2} />
             <List as="ul" overflow="hidden">
               {folders.map((folder, key) => (
                 <div key={key}>
@@ -111,8 +126,22 @@ const FolderList: React.FC = () => {
               )}
             </List>
           </TabPanel>
-          <TabPanel>
-            <p>two!</p>
+          <TabPanel border="1px" borderColor="gray.200" borderRadius="5px">
+            <List as="ul" overflow="hidden">
+              <ListItem
+                p={2}
+                _hover={{ bg: "gray.100" }}
+                cursor="pointer"
+                onClick={() => {
+                  navigate("/shared");
+                }}
+                className={tabIndex == 1 ? "selected" : ""}
+              >
+                <Flex>
+                  <Text>Shared</Text>
+                </Flex>
+              </ListItem>
+            </List>
           </TabPanel>
         </TabPanels>
       </Tabs>
