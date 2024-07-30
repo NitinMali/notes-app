@@ -36,9 +36,8 @@ const FolderList: React.FC = () => {
   } = useSelector((state: RootState) => state.folders);
   const folders = allFolders.filter((folder) => folder.username === username);
 
-  const notes = useSelector((state: RootState) =>
-    state.notes.notes.filter((note) => note.username === username)
-  );
+  const allNotes = useSelector((state: RootState) => state.notes.notes);
+  const notes = allNotes.filter((note) => note.username === username)
 
   useEffect(() => {
     setTabIndex(0);
@@ -46,7 +45,7 @@ const FolderList: React.FC = () => {
   return (
     <>
       <Tabs
-        index={tabIndex} 
+        index={tabIndex}
         position="relative"
         variant="unstyled"
         onChange={(index) => {
@@ -54,8 +53,10 @@ const FolderList: React.FC = () => {
           if (index == 1) {
             navigate("/shared");
           } else {
-            if(folders[0]) {
+            if (folders[0]) {
               navigate(`/${folders[0].id}`);
+            } else {
+              navigate("/");
             }
           }
         }}
@@ -143,6 +144,15 @@ const FolderList: React.FC = () => {
               >
                 <Flex>
                   <Text>Shared</Text>
+                  <Spacer />
+                  {username && (
+                    <Badge color="black" borderRadius="5px">
+                      {
+                        allNotes.filter((note) => note.share?.includes(username))
+                          .length
+                      }
+                    </Badge>
+                  )}
                 </Flex>
               </ListItem>
             </List>

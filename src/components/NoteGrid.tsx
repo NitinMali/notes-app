@@ -50,16 +50,18 @@ const NoteGrid: React.FC = () => {
   );
   const folders = allFolders.filter((folder) => folder.username === username);
 
-  let selectedFolder:any;
-  let notes:any[] = [];
+  let selectedFolder: any;
+  let notes: any[] = [];
 
   if (id == "shared") {
     selectedFolder = {
-      id: 'shared',
-      title: 'Shared'
-    }
+      id: "shared",
+      title: "Shared",
+    };
     notes = useSelector((state: RootState) =>
-      username ? state.notes.notes.filter((note) => note.share?.includes(username)): []
+      username
+        ? state.notes.notes.filter((note) => note.share?.includes(username))
+        : []
     );
   } else {
     selectedFolder = allFolders.find((folder) => folder.id === folderId);
@@ -97,7 +99,7 @@ const NoteGrid: React.FC = () => {
 
   return (
     <>
-      {(selectedFolder || id == 'shared') ? (
+      {selectedFolder || id == "shared" ? (
         <>
           <Flex mb={4}>
             {!editFolder && (
@@ -105,18 +107,20 @@ const NoteGrid: React.FC = () => {
                 <Heading size="md" mt={3}>
                   {selectedFolder.title}
                 </Heading>
-                {id !== 'shared' && (<EditIcon
-                  ml={4}
-                  mt={4}
-                  cursor="pointer"
-                  color="blue"
-                  onClick={() => {
-                    setEditFolder(true);
-                    if (selectedFolder?.title) {
-                      setFolderTitle(selectedFolder.title);
-                    }
-                  }}
-                />)}
+                {id !== "shared" && (
+                  <EditIcon
+                    ml={4}
+                    mt={4}
+                    cursor="pointer"
+                    color="blue"
+                    onClick={() => {
+                      setEditFolder(true);
+                      if (selectedFolder?.title) {
+                        setFolderTitle(selectedFolder.title);
+                      }
+                    }}
+                  />
+                )}
               </>
             )}
 
@@ -155,7 +159,7 @@ const NoteGrid: React.FC = () => {
             )}
 
             <Spacer />
-            {!editFolder && id!=='shared' && (
+            {!editFolder && id !== "shared" && (
               <>
                 <Button
                   leftIcon={<AddIcon />}
@@ -206,8 +210,9 @@ const NoteGrid: React.FC = () => {
           {notes.length === 0 && (
             <Alert status="error" mt={2}>
               <AlertIcon />
-              This folder is empty. Please click '+ Note' to start adding some
-              notes.
+              {id === "shared"
+                ? "Please ask others to share notes with you"
+                : "This folder is empty. Please click '+ Note' to start adding some notes."}
             </Alert>
           )}
         </>
